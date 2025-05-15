@@ -1,0 +1,29 @@
+import gradio as gr
+import joblib  # or use pickle
+import numpy as np
+
+# Load your trained regression model
+model = joblib.load("house_price_model.pkl")  # path to your trained model
+
+# Define prediction function
+def predict_price(bedrooms, bathrooms, sqft, location_score):
+    features = np.array([[bedrooms, bathrooms, sqft, location_score]])
+    price = model.predict(features)
+    return f"${price[0]:,.2f}"
+
+# Create Gradio interface
+iface = gr.Interface(
+    fn=predict_price,
+    inputs=[
+        gr.Number(label="Bedrooms"),
+        gr.Number(label="Bathrooms"),
+        gr.Number(label="Square Footage"),
+        gr.Number(label="Location Score (1-10)"),
+    ],
+    outputs="text",
+    title="House Price Prediction",
+    description="Enter the house details to get a predicted price using our regression model."
+)
+
+# Launch the app
+iface.launch(share=True)  # share=True gives you the public URL
